@@ -1,0 +1,30 @@
+PHOTO SOURCES / 사진 출처 메모
+
+This package uses real Aricell-related presentation images prepared for the educational project.
+Use them only for class/presentation context and keep source attribution on slides or README.
+
+Recommended captions:
+1. hero.jpg
+   KR: 2024년 6월 24일 화성 아리셀 리튬전지 공장 화재 현장
+   RU: Пожар на заводе Aricell, Хвасон, 24 июня 2024 г.
+
+2. accident-site.jpg
+   KR: 소방대와 관계자들이 출동한 화재 현장
+   RU: Работа пожарных и экстренных служб на месте аварии.
+
+3. battery.jpg
+   KR: 아리셀 사고 관련 뉴스 이미지 / 발표용 보조 이미지
+   RU: Визуальный материал для блока о литиевых батареях и новостном контексте.
+
+4. factory.jpg
+   KR: 화재 이후 손상된 공장 외관
+   RU: Повреждённое здание завода после пожара.
+
+5. memorial.jpg
+   KR: 사고 위치 및 건물 설명용 보조 이미지
+   RU: Вспомогательное изображение для локации и структуры кейса.
+
+Suggested public references to write in README or slides:
+- Reuters: Aricell lithium battery factory fire, Hwaseong, June 24, 2024.
+- Yonhap News Agency: investigation and confirmed victim data.
+- Al Jazeera / Korea Times articles using wire-service photos.
