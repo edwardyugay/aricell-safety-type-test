@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Safety Analyst Type Test | Aricell Case</title>
+  <style>
+    :root {
+      --bg: #070a12;
+      --bg2: #101725;
+      --panel: rgba(255,255,255,.085);
+      --border: rgba(255,255,255,.16);
+      --text: #f7f9ff;
+      --muted: #aab5c9;
+      --weak: #7f8ba3;
+      --red: #ff5c5c;
+      --orange: #ffb347;
+      --yellow: #f9dc5c;
+      --green: #5ee0a0;
+      --blue: #65a8ff;
+      --purple: #b783ff;
+      --shadow: 0 28px 90px rgba(0,0,0,.45);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 8% 8%, rgba(255,92,92,.24), transparent 30%),
+        radial-gradient(circle at 92% 3%, rgba(255,179,71,.19), transparent 33%),
+        radial-gradient(circle at 65% 64%, rgba(101,168,255,.13), transparent 35%),
+        linear-gradient(135deg, var(--bg), var(--bg2) 55%, #070a12);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 52px 52px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,.9), transparent 85%);
+      z-index: -1;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; }
+
+    .container {
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      background: rgba(7,10,18,.75);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      letter-spacing: -.03em;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--red), var(--orange));
+      box-shadow: 0 0 30px rgba(255,92,92,.35);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .hero { padding: 74px 0 44px; }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.07fr .93fr;
+      gap: 26px;
+      align-items: stretch;
+    }
+
+    .glass {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.045));
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      position: relative;
+      overflow: hidden;
+      padding: 38px;
+      min-height: 560px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .hero-card::after {
+      content: "HF";
+      position: absolute;
+      right: -20px;
+      bottom: -72px;
+      font-size: 230px;
+      line-height: .8;
+      font-weight: 900;
+      color: rgba(255,255,255,.045);
+      letter-spacing: -.12em;
+    }
+
+    .kicker {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,179,71,.32);
+      background: rgba(255,179,71,.13);
+      color: #ffd59d;
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(42px, 6vw, 78px);
+      line-height: .95;
+      letter-spacing: -.07em;
+    }
+
+    .hero-subtitle {
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.75;
+      margin: 24px 0 0;
+      max-width: 720px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .btn {
+      border: 0;
+      cursor: pointer;
+      border-radius: 15px;
+      padding: 14px 20px;
+      color: #111827;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--orange), #ffd28f);
+      box-shadow: 0 18px 38px rgba(255,179,71,.24);
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 24px 48px rgba(255,179,71,.32);
+    }
+
+    .btn.secondary {
+      color: var(--text);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.09);
+      box-shadow: none;
+    }
+
+    .hero-image-card {
+      overflow: hidden;
+      min-height: 560px;
+      position: relative;
+    }
+
+    .hero-image {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to top, rgba(7,10,18,.96), rgba(7,10,18,.12), rgba(7,10,18,.25)),
+        url("hero.jpg");
+      background-size: cover;
+      background-position: center;
+      transform: scale(1.02);
+    }
+
+    .photo-slot {
+      position: absolute;
+      inset: 24px;
+      border: 1px dashed rgba(255,255,255,.40);
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: rgba(255,255,255,.78);
+      z-index: 2;
+      pointer-events: none;
+      padding: 24px;
+    }
+
+    .photo-slot strong { color: var(--text); }
+
+    .image-caption {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 24px;
+      z-index: 3;
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 19px;
+      background: rgba(0,0,0,.54);
+      backdrop-filter: blur(14px);
+      padding: 18px;
+    }
+
+    .image-caption strong { display: block; margin-bottom: 7px; }
+    .image-caption span { display: block; color: var(--muted); line-height: 1.6; font-size: 14px; }
+
+    .section { padding: 46px 0; }
+
+    .section-title {
+      font-size: clamp(30px, 3.6vw, 48px);
+      line-height: 1.08;
+      letter-spacing: -.05em;
+      margin: 0 0 12px;
+    }
+
+    .section-desc {
+      max-width: 860px;
+      color: var(--muted);
+      line-height: 1.75;
+      margin: 0 0 26px;
+    }
+
+    .facts-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .fact-card {
+      padding: 22px;
+      border: 1px solid var(--border);
+      border-radius: 19px;
+      background: var(--panel);
+    }
+
+    .fact-value {
+      font-size: 32px;
+      font-weight: 950;
+      color: var(--orange);
+      letter-spacing: -.04em;
+    }
+
+    .fact-label {
+      color: var(--muted);
+      margin-top: 7px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .photo-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 19px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      min-height: 245px;
+    }
+
+    .photo-card-img {
+      height: 158px;
+      background-size: cover;
+      background-position: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .photo-empty {
+      height: 158px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 18px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      background:
+        linear-gradient(135deg, rgba(255,92,92,.08), rgba(255,179,71,.08));
+      margin-top: -158px;
+      pointer-events: none;
+    }
+
+    .photo-card p {
+      margin: 0;
+      padding: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .test-grid {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .test-card {
+      padding: 28px;
+      min-height: 660px;
+    }
+
+    .progress-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 14px;
+    }
+
+    .progress-track {
+      height: 11px;
+      background: rgba(255,255,255,.08);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--red), var(--orange), var(--yellow));
+      transition: width .35s ease;
+    }
+
+    .question-tag {
+      display: inline-flex;
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(101,168,255,.32);
+      background: rgba(101,168,255,.13);
+      color: #c3dcff;
+      font-size: 13px;
+      font-weight: 900;
+      margin-bottom: 16px;
+    }
+
+    .question-title {
+      font-size: clamp(25px, 3vw, 34px);
+      line-height: 1.28;
+      letter-spacing: -.04em;
+      margin: 0 0 12px;
+    }
+
+    .question-text {
+      color: var(--muted);
+      line-height: 1.75;
+      margin: 0 0 24px;
+    }
+
+    .answers { display: grid; gap: 12px; }
+
+    .answer {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      padding: 16px;
+      text-align: left;
+      background: rgba(255,255,255,.07);
+      color: var(--text);
+      cursor: pointer;
+      transition: transform .17s ease, background .17s ease, border-color .17s ease;
+    }
+
+    .answer:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,.12);
+      border-color: rgba(255,179,71,.58);
+    }
+
+    .answer strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+
+    .answer span {
+      display: block;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .side { display: grid; gap: 18px; }
+    .side-card { padding: 22px; }
+
+    .side-title {
+      margin: 0 0 15px;
+      font-size: 21px;
+      letter-spacing: -.035em;
+    }
+
+    .bar-item { margin-bottom: 14px; }
+
+    .bar-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 7px;
+    }
+
+    .bar-track {
+      height: 11px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,.08);
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      transition: width .35s ease;
+      background: linear-gradient(90deg, var(--blue), var(--purple));
+    }
+
+    .model-pills { display: grid; gap: 10px; }
+
+    .pill {
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 13px;
+      background: rgba(255,255,255,.065);
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .pill strong { color: var(--text); }
+
+    .final {
+      display: none;
+      margin-top: 20px;
+      padding: 30px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(94,224,160,.26);
+      background:
+        radial-gradient(circle at top right, rgba(94,224,160,.18), transparent 32%),
+        linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.045));
+      animation: pop .34s ease;
+    }
+
+    .final.show { display: block; }
+
+    @keyframes pop {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .final-kicker {
+      color: var(--green);
+      font-weight: 900;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .final-title {
+      margin: 0 0 12px;
+      color: var(--green);
+      font-size: clamp(30px, 4vw, 50px);
+      letter-spacing: -.055em;
+      line-height: 1.05;
+    }
+
+    .final-desc {
+      color: var(--muted);
+      line-height: 1.8;
+      margin: 0 0 16px;
+    }
+
+    .final-boxes {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .final-box {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      background: rgba(255,255,255,.07);
+    }
+
+    .final-box strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .final-box span {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .final-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .timeline { display: grid; gap: 14px; }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 18px;
+      border: 1px solid var(--border);
+      border-radius: 19px;
+      background: var(--panel);
+      padding: 18px;
+    }
+
+    .timeline-date {
+      color: var(--orange);
+      font-weight: 950;
+    }
+
+    .timeline-text {
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .sources-card {
+      padding: 24px;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    code {
+      color: var(--text);
+      background: rgba(255,255,255,.08);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2px 7px;
+    }
+
+    .footer {
+      padding: 42px 0 64px;
+      color: var(--weak);
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 980px) {
+      .hero-grid, .test-grid { grid-template-columns: 1fr; }
+      .facts-grid, .photo-grid { grid-template-columns: repeat(2, 1fr); }
+      .nav-links { display: none; }
+    }
+
+    @media (max-width: 620px) {
+      .hero-card, .test-card { padding: 22px; }
+      .facts-grid, .photo-grid, .final-boxes { grid-template-columns: 1fr; }
+      .timeline-item { grid-template-columns: 1fr; }
+      .hero-image-card { min-height: 470px; }
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="#top">
+        <span class="brand-mark">🧭</span>
+        <span>Safety Analyst Type Test</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="#facts">핵심 데이터</a>
+        <a href="#test">테스트 시작</a>
+        <a href="#timeline">Timeline</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-card glass">
+          <h1>사고분석 유형 테스트</h1>
+          <p class="hero-subtitle">
+            2024년 화성 아리셀 리튬전지 공장 화재사고를 바탕으로,
+            사용자의 선택을 분석해 어떤 사고분석 모델과 가장 가까운지 보여주는
+            인터랙티브 테스트입니다.
+            <strong>4M, Swiss Cheese, Domino, HFACS, SHELL</strong> 모델을 비교합니다.
+          </p>
+
+          <div class="hero-actions">
+            <button class="btn" onclick="scrollToTest()">테스트 시작하기</button>
+            <a class="btn secondary" href="#facts">사고 데이터 보기</a>
+          </div>
+        </div>
+
+        <div class="hero-image-card glass">
+          <div class="hero-image"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="facts" class="section">
+      <div class="container">
+        <h2 class="section-title">핵심 데이터 Dashboard</h2>
+        <p class="section-desc">
+          발표 도입부에서 사용할 수 있는 핵심 수치입니다.
+          숫자는 수업 발표자료와 README의 출처 표기와 함께 사용하세요.
+        </p>
+
+        <div class="facts-grid">
+          <div class="fact-card"><div class="fact-value">2024.06.24</div><div class="fact-label">경기도 화성시 아리셀 공장 화재 발생</div></div>
+          <div class="fact-card"><div class="fact-value">23명</div><div class="fact-label">최종 사망자 수</div></div>
+          <div class="fact-card"><div class="fact-value">8명</div><div class="fact-label">부상자 수</div></div>
+          <div class="fact-card"><div class="fact-value">37초</div><div class="fact-label">초기 대피 골든타임</div></div>
+          <div class="fact-card"><div class="fact-value">35,000개</div><div class="fact-label">현장 보관 리튬전지 규모</div></div>
+          <div class="fact-card"><div class="fact-value">53명</div><div class="fact-label">신규 투입 근로자 수</div></div>
+          <div class="fact-card"><div class="fact-value">6.5%</div><div class="fact-label">2024년 6월 불량률</div></div>
+          <div class="fact-card"><div class="fact-value">5개</div><div class="fact-label">적용 사고분석 모델</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="test" class="section">
+      <div class="container">
+        <h2 class="section-title">Safety Analyst Type Test</h2>
+        <p class="section-desc">
+          각 질문에서 본인의 사고분석 방식과 가장 가까운 선택지를 고르세요.
+          정답이 있는 시험이 아니라, 분석 성향을 보여주는 MBTI-style 테스트입니다.
+        </p>
+
+        <div class="test-grid">
+          <div class="test-card glass">
+            <div class="progress-row">
+              <span id="stepLabel">Question 1 / 12</span>
+              <span id="currentLeader">분석 중</span>
+            </div>
+
+            <div class="progress-track">
+              <div id="progressFill" class="progress-fill"></div>
+            </div>
+
+            <div id="questionArea">
+              <div class="question-tag" id="questionTag">사고 인식</div>
+              <h3 class="question-title" id="questionTitle"></h3>
+              <p class="question-text" id="questionText"></p>
+              <div class="answers" id="answers"></div>
+            </div>
+
+            <div id="finalResult" class="final">
+              <div class="final-kicker">당신의 사고분석 유형</div>
+              <h3 id="finalTitle" class="final-title"></h3>
+              <p id="finalDesc" class="final-desc"></p>
+
+              <div class="final-boxes">
+                <div class="final-box"><strong>강점</strong><span id="finalStrength"></span></div>
+                <div class="final-box"><strong>주의점</strong><span id="finalBlindspot"></span></div>
+                <div class="final-box"><strong>추천 발표 역할</strong><span id="finalRole"></span></div>
+                <div class="final-box"><strong>핵심 문장</strong><span id="finalQuote"></span></div>
+              </div>
+
+              <div class="final-actions">
+                <button class="btn" onclick="restartTest()">다시 테스트하기</button>
+                <button class="btn secondary" onclick="copyResult()">결과 복사하기</button>
+                <a class="btn secondary" href="#timeline">Timeline 보기</a>
+              </div>
+            </div>
+          </div>
+
+          <aside class="side">
+            <div class="side-card glass">
+              <h3 class="side-title">실시간 모델 점수</h3>
+              <div id="scoreBars"></div>
+            </div>
+
+            <div class="side-card glass">
+              <h3 class="side-title">모델 설명</h3>
+              <div class="model-pills">
+                <div class="pill"><strong>4M</strong><br />Man, Machine, Media, Management로 원인을 분류</div>
+                <div class="pill"><strong>Swiss Cheese</strong><br />여러 안전 방어벽의 실패가 겹쳐 사고 발생</div>
+                <div class="pill"><strong>Domino</strong><br />사건들이 순서대로 연결되어 사고로 발전</div>
+                <div class="pill"><strong>HFACS</strong><br />작업자, 감독, 조직문화까지 계층적으로 분석</div>
+                <div class="pill"><strong>SHELL</strong><br />Software, Hardware, Environment, Liveware 상호작용 분석</div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section id="timeline" class="section">
+      <div class="container">
+        <h2 class="section-title">사고 발생 Timeline</h2>
+        <p class="section-desc">
+          사고는 하나의 순간이 아니라 여러 위험 신호가 누적되어 발생했습니다.
+          발표에서는 이 흐름을 Domino Model 또는 Swiss Cheese Model과 연결할 수 있습니다.
+        </p>
+
+        <div class="timeline">
+          <div class="timeline-item"><div class="timeline-date">2024.04</div><div class="timeline-text">군납 배터리 품질검사에서 규격 미달 문제가 발생함. 이는 단순 품질 문제가 아니라 안전 위험의 초기 신호였음.</div></div>
+          <div class="timeline-item"><div class="timeline-date">2024.05</div><div class="timeline-text">납기 대응을 위해 하루 약 5,000개 생산 목표를 설정함. 생산 압박이 안전관리보다 우선될 위험이 커짐.</div></div>
+          <div class="timeline-item"><div class="timeline-date">2024.06</div><div class="timeline-text">불량률 증가, 신규 근로자 투입, 안전교육 부족 문제가 동시에 나타남.</div></div>
+          <div class="timeline-item"><div class="timeline-date">2024.06.22</div><div class="timeline-text">사고 이틀 전 과열 배터리 폭발 및 화재가 발생함. 이 시점에서 작업중지와 원인분석이 필요했음.</div></div>
+          <div class="timeline-item"><div class="timeline-date">2024.06.24</div><div class="timeline-text">리튬전지 폭발과 연쇄 화재 발생. 약 37초의 대피 가능 시간이 있었지만 대피 실패로 대규모 인명피해 발생.</div></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    Safety Analyst Type Test · Aricell Human Factors Case Study · GitHub Pages Ready
+  </footer>
+
+  <script>
+    const modelInfo = {
+      "4M": {
+        short: "4M",
+        title: "4M형 구조화 분석가",
+        desc: "당신은 사고 원인을 사람, 기계, 환경, 관리 요인으로 나누어 체계적으로 정리하는 데 강점이 있습니다. 복잡한 사고를 보고서나 발표자료로 명확하게 구조화하는 유형입니다.",
+        strength: "복잡한 원인을 분류하고 표로 정리하는 능력이 강합니다.",
+        blindspot: "각 요인이 서로 어떻게 연결되는지 설명이 부족할 수 있습니다.",
+        role: "4M 분석 슬라이드와 원인분류 파트 발표에 적합합니다.",
+        quote: "사고 원인은 하나가 아니라 Man, Machine, Media, Management가 함께 작용한 결과입니다."
+      },
+      "Swiss": {
+        short: "Swiss Cheese",
+        title: "Swiss Cheese형 시스템 방어벽 분석가",
+        desc: "당신은 사고를 개인의 실수로만 보지 않고, 여러 안전 방어벽이 동시에 실패한 결과로 이해합니다. 품질관리, 교육, 대피체계, 조직문화가 함께 무너진 과정을 설명하는 데 강합니다.",
+        strength: "개인 책임보다 시스템 실패를 설득력 있게 설명합니다.",
+        blindspot: "각 방어벽이 왜 실패했는지 구체적 근거를 함께 제시해야 합니다.",
+        role: "Swiss Cheese Model 슬라이드와 결론 파트 발표에 적합합니다.",
+        quote: "여러 안전 방어벽의 구멍이 동시에 겹치면서 중대재해가 발생했습니다."
+      },
+      "Domino": {
+        short: "Domino",
+        title: "Domino형 사고 흐름 추적자",
+        desc: "당신은 사고가 갑자기 발생한 것이 아니라 여러 사건이 순서대로 연결된 결과라고 봅니다. 품질검사 실패, 생산 압박, 불량률 증가, 이전 화재, 최종 사고의 흐름을 설명하는 데 강합니다.",
+        strength: "사고 전개 과정을 Timeline으로 쉽게 설명할 수 있습니다.",
+        blindspot: "사고를 너무 단순한 선형 구조로만 설명하지 않도록 주의해야 합니다.",
+        role: "사고 발생 과정과 Timeline 파트 발표에 적합합니다.",
+        quote: "작은 위험 신호들이 순서대로 연결되어 최종 사고로 이어졌습니다."
+      },
+      "HFACS": {
+        short: "HFACS",
+        title: "HFACS형 인적요인 심층 분석가",
+        desc: "당신은 현장 근로자의 행동뿐 아니라 감독 실패, 조직문화, 경영진의 의사결정까지 계층적으로 분석합니다. ‘누가 실수했는가’보다 ‘왜 그런 행동이 가능했는가’를 중요하게 봅니다.",
+        strength: "human error를 개인 문제가 아니라 조직 구조 안에서 깊게 분석합니다.",
+        blindspot: "분석이 길어질 수 있으므로 핵심 계층을 명확히 정리해야 합니다.",
+        role: "인적요인 원인분석과 조직적 관리 실패 파트 발표에 적합합니다.",
+        quote: "현장 행동 뒤에는 감독, 조직문화, 경영 의사결정의 영향이 있었습니다."
+      },
+      "SHELL": {
+        short: "SHELL",
+        title: "SHELL형 인간-시스템 상호작용 분석가",
+        desc: "당신은 작업자와 절차, 장비, 환경, 동료·관리자 사이의 상호작용을 중심으로 사고를 분석합니다. 외국인 근로자 교육, 대피절차 이해 부족, 비상구 구조, 위험 정보 전달 실패를 설명하는 데 강합니다.",
+        strength: "작업자와 시스템 사이의 mismatch를 잘 찾아냅니다.",
+        blindspot: "범위가 넓어질 수 있으므로 Software, Hardware, Environment, Liveware별 핵심만 정리해야 합니다.",
+        role: "SHELL Model 적용과 외국인 근로자 안전교육 파트 발표에 적합합니다.",
+        quote: "사고는 작업자와 절차, 장비, 환경, 의사소통이 서로 맞지 않았기 때문에 확대되었습니다."
+      }
+    };
+
+    const questions = [
+      {
+        tag: "사고 인식",
+        title: "사고를 처음 분석할 때 당신은 무엇을 먼저 봅니까?",
+        text: "아리셀 사고 자료를 처음 받았습니다. 발표 준비를 위해 가장 먼저 확인하고 싶은 것은 무엇입니까?",
+        answers: [
+          { model: "4M", label: "원인 분류", text: "사람, 기계, 환경, 관리 요인으로 먼저 나누어 정리한다." },
+          { model: "Swiss", label: "방어벽 실패", text: "어떤 안전 방어벽들이 동시에 실패했는지 본다." },
+          { model: "Domino", label: "사고 흐름", text: "사고 전 단계부터 시간 순서대로 추적한다." },
+          { model: "HFACS", label: "조직 계층", text: "근로자, 감독자, 조직문화, 경영 판단까지 계층적으로 본다." },
+          { model: "SHELL", label: "상호작용", text: "작업자와 절차, 장비, 환경이 서로 맞았는지 본다." }
+        ]
+      },
+      {
+        tag: "핵심 문제",
+        title: "아리셀 사고에서 가장 중요한 문제는 무엇이라고 생각합니까?",
+        text: "직접 원인은 배터리 폭발이지만, 사고가 대형 참사로 확대된 배경을 분석해야 합니다.",
+        answers: [
+          { model: "4M", label: "복합 원인", text: "Man, Machine, Media, Management가 함께 작용한 문제다." },
+          { model: "Swiss", label: "동시 실패", text: "품질관리, 교육, 대피체계라는 방어벽이 동시에 실패했다." },
+          { model: "Domino", label: "사고 연쇄", text: "품질검사 실패부터 최종 화재까지 연결된 사고 연쇄다." },
+          { model: "HFACS", label: "관리 실패", text: "관리자와 조직의 위험 의사결정 실패가 핵심이다." },
+          { model: "SHELL", label: "시스템 부적합", text: "작업자와 절차, 비상구, 작업환경 사이의 부적합이 핵심이다." }
+        ]
+      },
+      {
+        tag: "품질관리",
+        title: "불량률이 2.2%에서 6.5%로 증가했습니다.",
+        text: "이 수치를 발표에서 어떻게 해석하는 것이 가장 적절하다고 생각합니까?",
+        answers: [
+          { model: "4M", label: "Management 문제", text: "품질관리와 생산관리의 Management 요인으로 분류한다." },
+          { model: "Swiss", label: "방어벽 약화", text: "품질관리 방어벽이 약해진 early warning signal로 본다." },
+          { model: "Domino", label: "중간 단계", text: "최종 사고로 이어지는 중간 단계로 본다." },
+          { model: "HFACS", label: "감독 실패", text: "감독과 조직이 위험 신호를 무시한 것으로 본다." },
+          { model: "SHELL", label: "부적합", text: "작업자, 설비, 절차 사이의 mismatch로 본다." }
+        ]
+      },
+      {
+        tag: "신규 근로자",
+        title: "신규 근로자 53명이 충분한 교육 없이 투입되었습니다.",
+        text: "위험공정에 신규 인력이 빠르게 투입된 상황을 어떻게 분석하겠습니까?",
+        answers: [
+          { model: "4M", label: "Man + Management", text: "사람 요인과 관리 요인이 동시에 존재한다고 본다." },
+          { model: "Swiss", label: "교육 방어벽", text: "안전교육이라는 방어벽이 실패했다고 본다." },
+          { model: "Domino", label: "다음 도미노", text: "생산 확대 이후 다음 도미노가 넘어졌다고 본다." },
+          { model: "HFACS", label: "조직 압박", text: "감독 실패와 조직 압박이 근로자 행동에 영향을 주었다고 본다." },
+          { model: "SHELL", label: "Liveware-Software", text: "신규 근로자와 교육자료, 작업절차가 맞지 않았다고 본다." }
+        ]
+      },
+      {
+        tag: "이전 화재",
+        title: "사고 이틀 전 이미 과열 배터리 화재가 있었습니다.",
+        text: "이 사건 이후에도 생산이 계속되었습니다. 가장 중요한 분석 포인트는 무엇입니까?",
+        answers: [
+          { model: "4M", label: "관리적 원인", text: "이전 화재 대응 실패를 관리 요인으로 분류한다." },
+          { model: "Swiss", label: "Near-miss 방어벽", text: "near-miss를 막는 방어벽이 작동하지 않았다." },
+          { model: "Domino", label: "직전 단계", text: "최종 사고 직전의 중요한 연결 사건이다." },
+          { model: "HFACS", label: "위험 정상화", text: "조직이 위험을 정상화한 것으로 본다." },
+          { model: "SHELL", label: "의사소통 실패", text: "위험 정보가 관리자와 근로자 사이에 제대로 전달되지 않았다." }
+        ]
+      },
+      {
+        tag: "대피 실패",
+        title: "첫 폭발 후 약 37초의 골든타임을 활용하지 못했습니다.",
+        text: "피해가 커진 이유를 어떻게 설명하겠습니까?",
+        answers: [
+          { model: "4M", label: "사람과 관리", text: "Man과 Management 요인이 함께 작용했다." },
+          { model: "Swiss", label: "마지막 방어벽", text: "마지막 방어벽인 대피체계가 실패했다." },
+          { model: "Domino", label: "흐름", text: "폭발 → 대피 지연 → 사망사고로 이어진 흐름이다." },
+          { model: "HFACS", label: "계층적 실패", text: "교육, 감독, 조직문화의 계층적 실패이다." },
+          { model: "SHELL", label: "대피 부적합", text: "작업자, 비상구, 대피절차, 환경 사이의 부적합이다." }
+        ]
+      },
+      {
+        tag: "외국인 근로자",
+        title: "사망자 중 외국인 근로자가 많았습니다.",
+        text: "이 사실을 Human Factors 관점에서 어떻게 해석하겠습니까?",
+        answers: [
+          { model: "4M", label: "Man 요인", text: "언어 이해와 숙련도 차이를 사람 요인으로 정리한다." },
+          { model: "Swiss", label: "교육 방어벽 실패", text: "다국어 안전교육이라는 방어벽이 부족했다고 본다." },
+          { model: "Domino", label: "피해 확대 단계", text: "교육 부족이 대피 실패로 이어진 단계로 본다." },
+          { model: "HFACS", label: "조직 책임", text: "외국인 근로자 보호체계를 갖추지 못한 조직 문제로 본다." },
+          { model: "SHELL", label: "Liveware-Liveware", text: "근로자와 관리자 간 의사소통 실패로 본다." }
+        ]
+      },
+      {
+        tag: "재발방지",
+        title: "가장 먼저 제시해야 할 재발방지대책은 무엇입니까?",
+        text: "대책은 사고 원인과 논리적으로 연결되어야 합니다.",
+        answers: [
+          { model: "4M", label: "요인별 대책", text: "Man, Machine, Media, Management별 대책을 나누어 제시한다." },
+          { model: "Swiss", label: "방어벽 보강", text: "품질관리, 교육, 대피체계 등 여러 방어벽을 동시에 보강한다." },
+          { model: "Domino", label: "연쇄 차단", text: "품질검사 실패나 이전 화재 단계에서 사고 연쇄를 끊는다." },
+          { model: "HFACS", label: "조직 개선", text: "감독체계와 조직문화, 경영 KPI를 개선한다." },
+          { model: "SHELL", label: "상호작용 개선", text: "절차, 장비, 환경, 의사소통을 작업자 중심으로 재설계한다." }
+        ]
+      },
+      {
+        tag: "발표 방식",
+        title: "발표에서 가장 설득력 있는 슬라이드는 어떤 방식입니까?",
+        text: "팀 발표에서 본인이 맡고 싶은 슬라이드 스타일을 선택해 보세요.",
+        answers: [
+          { model: "4M", label: "표 중심", text: "원인을 표로 분류해서 한눈에 보이게 만든다." },
+          { model: "Swiss", label: "방어벽 그림", text: "여러 방어벽의 구멍이 겹치는 그림으로 설명한다." },
+          { model: "Domino", label: "Timeline", text: "시간 순서로 사건이 연결되는 흐름을 보여준다." },
+          { model: "HFACS", label: "계층 구조", text: "작업자-감독-조직-경영진의 구조로 설명한다." },
+          { model: "SHELL", label: "관계도", text: "작업자를 중심으로 절차, 장비, 환경, 의사소통 관계도를 만든다." }
+        ]
+      },
+      {
+        tag: "책임 분석",
+        title: "사고 책임을 설명할 때 가장 피해야 할 태도는 무엇입니까?",
+        text: "Human Factors 수업에서는 개인 비난보다 시스템 분석이 중요합니다.",
+        answers: [
+          { model: "4M", label: "단일 원인", text: "하나의 원인만 말하지 않고 4가지 요인을 함께 본다." },
+          { model: "Swiss", label: "개인 실수", text: "개인의 실수만 강조하지 않고 방어벽 실패를 본다." },
+          { model: "Domino", label: "마지막 순간", text: "마지막 폭발만 보지 않고 이전 단계를 추적한다." },
+          { model: "HFACS", label: "현장 책임만", text: "현장 근로자 책임만 보지 않고 감독과 조직 요인을 본다." },
+          { model: "SHELL", label: "작업자 고립", text: "작업자를 시스템과 분리해서 보지 않는다." }
+        ]
+      },
+      {
+        tag: "핵심 교훈",
+        title: "아리셀 사고의 가장 중요한 교훈은 무엇입니까?",
+        text: "결론 슬라이드에 넣을 핵심 메시지를 선택해 보세요.",
+        answers: [
+          { model: "4M", label: "복합 원인", text: "중대재해는 사람, 기계, 환경, 관리 요인의 복합 결과이다." },
+          { model: "Swiss", label: "방어벽", text: "안전은 하나의 장치가 아니라 여러 방어벽의 조합이다." },
+          { model: "Domino", label: "초기 차단", text: "작은 위험 신호를 초기에 끊지 못하면 대형 사고로 이어진다." },
+          { model: "HFACS", label: "조직", text: "현장 행동 뒤에는 조직의 의사결정과 안전문화가 있다." },
+          { model: "SHELL", label: "적합성", text: "작업자와 시스템이 맞지 않으면 안전절차는 실제로 작동하지 않는다." }
+        ]
+      },
+      {
+        tag: "최종 선택",
+        title: "당신이 최종 발표자라면 어떤 문장으로 마무리하겠습니까?",
+        text: "이 선택은 최종 점수에 더 크게 반영됩니다.",
+        answers: [
+          { model: "4M", label: "4M 결론", text: "아리셀 사고는 Man, Machine, Media, Management가 함께 실패한 사고입니다.", weight: 2 },
+          { model: "Swiss", label: "Swiss Cheese 결론", text: "여러 안전 방어벽의 실패가 동시에 겹쳐 중대재해로 확대되었습니다.", weight: 2 },
+          { model: "Domino", label: "Domino 결론", text: "작은 위험 신호들이 순서대로 연결되어 최종 사고로 이어졌습니다.", weight: 2 },
+          { model: "HFACS", label: "HFACS 결론", text: "현장 행동 뒤에는 감독 실패와 조직적 의사결정 문제가 있었습니다.", weight: 2 },
+          { model: "SHELL", label: "SHELL 결론", text: "작업자와 절차, 장비, 환경, 의사소통의 부적합이 피해를 키웠습니다.", weight: 2 }
+        ]
+      }
+    ];
+
+    let currentIndex = 0;
+    let scores = { "4M": 0, "Swiss": 0, "Domino": 0, "HFACS": 0, "SHELL": 0 };
+
+    function scrollToTest() {
+      document.getElementById("test").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function renderQuestion() {
+      const q = questions[currentIndex];
+      document.getElementById("stepLabel").textContent = `Question ${currentIndex + 1} / ${questions.length}`;
+      document.getElementById("progressFill").style.width = `${(currentIndex / questions.length) * 100}%`;
+      document.getElementById("questionTag").textContent = q.tag;
+      document.getElementById("questionTitle").textContent = q.title;
+      document.getElementById("questionText").textContent = q.text;
+
+      const answers = document.getElementById("answers");
+      answers.innerHTML = "";
+
+      q.answers.forEach((a) => {
+        const btn = document.createElement("button");
+        btn.className = "answer";
+        btn.innerHTML = `<strong>${a.label}</strong><span>${a.text}</span>`;
+        btn.addEventListener("click", () => chooseAnswer(a));
+        answers.appendChild(btn);
+      });
+
+      updateBars();
+    }
+
+    function chooseAnswer(answer) {
+      scores[answer.model] += answer.weight || 1;
+      currentIndex++;
+
+      if (currentIndex >= questions.length) showFinal();
+      else renderQuestion();
+    }
+
+    function getTotalScore() {
+      return Object.values(scores).reduce((sum, value) => sum + value, 0);
+    }
+
+    function getTopModel() {
+      const tiePriority = ["Swiss", "SHELL", "HFACS", "4M", "Domino"];
+      return Object.keys(scores).reduce((best, key) => {
+        if (scores[key] > scores[best]) return key;
+        if (scores[key] === scores[best] && tiePriority.indexOf(key) < tiePriority.indexOf(best)) return key;
+        return best;
+      }, "4M");
+    }
+
+    function updateBars() {
+      const total = getTotalScore();
+      const bars = document.getElementById("scoreBars");
+      bars.innerHTML = "";
+
+      Object.keys(modelInfo).forEach((key) => {
+        const percent = total === 0 ? 0 : Math.round((scores[key] / total) * 100);
+        const item = document.createElement("div");
+        item.className = "bar-item";
+        item.innerHTML = `
+          <div class="bar-head">
+            <span>${modelInfo[key].short}</span>
+            <span>${percent}%</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${percent}%"></div>
+          </div>
+        `;
+        bars.appendChild(item);
+      });
+
+      const leader = document.getElementById("currentLeader");
+      leader.textContent = total === 0 ? "분석 중" : `현재 우세: ${modelInfo[getTopModel()].short}`;
+    }
+
+    function showFinal() {
+      document.getElementById("progressFill").style.width = "100%";
+      document.getElementById("questionArea").classList.add("hidden");
+
+      const topKey = getTopModel();
+      const info = modelInfo[topKey];
+
+      document.getElementById("finalTitle").textContent = info.title;
+      document.getElementById("finalDesc").textContent = info.desc;
+      document.getElementById("finalStrength").textContent = info.strength;
+      document.getElementById("finalBlindspot").textContent = info.blindspot;
+      document.getElementById("finalRole").textContent = info.role;
+      document.getElementById("finalQuote").textContent = info.quote;
+      document.getElementById("finalResult").classList.add("show");
+      document.getElementById("currentLeader").textContent = `최종 결과: ${info.short}`;
+      updateBars();
+    }
+
+    function restartTest() {
+      currentIndex = 0;
+      scores = { "4M": 0, "Swiss": 0, "Domino": 0, "HFACS": 0, "SHELL": 0 };
+      document.getElementById("questionArea").classList.remove("hidden");
+      document.getElementById("finalResult").classList.remove("show");
+      renderQuestion();
+    }
+
+    function copyResult() {
+      const topKey = getTopModel();
+      const info = modelInfo[topKey];
+      const total = getTotalScore();
+
+      const percentages = Object.keys(scores)
+        .map((key) => {
+          const percent = total === 0 ? 0 : Math.round((scores[key] / total) * 100);
+          return `${modelInfo[key].short}: ${percent}%`;
+        })
+        .join("\n");
+
+      const text = `나의 사고분석 유형: ${info.title}\n\n${info.desc}\n\n모델 점수:\n${percentages}\n\n핵심 문장: ${info.quote}`;
+
+      navigator.clipboard.writeText(text)
+        .then(() => alert("결과가 복사되었습니다."))
+        .catch(() => alert("복사에 실패했습니다. 브라우저 권한을 확인하세요."));
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>
